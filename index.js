@@ -56,6 +56,15 @@ const counterABI=[
 		"type": "function"
 	},
 	{
+		"constant": false,
+		"inputs": [],
+		"name": "loop",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"constant": true,
 		"inputs": [],
 		"name": "getCount",
@@ -71,10 +80,10 @@ const counterABI=[
 		"type": "function"
 	}
 ];
-const counterAddress="0x65CAEC30a86135c1dce58f8d4b469E67F87692c2";
+const counterAddress="0xa1f98C3dC4350AA3280c38Cb21B286A53b0b6B16".toLowerCase();
 
-CounterContract = undefined;
-Counter = undefined;
+let CounterContract = undefined;
+let Counter = undefined;
 let biconomy;
 
 window.addEventListener('load', async () => {
@@ -84,8 +93,8 @@ window.addEventListener('load', async () => {
 		if (window.Biconomy) {
 				let Biconomy = window.Biconomy;
 				let options = {
-					dappId: '5e82adf8b3b82b3bc156ca6d',
-					apiKey: 'vjjhn-o_d.6932dc53-cd88-4094-aa3f-8988e6ee724e',
+					dappId: '5e855015c1fae00bce5ab163',
+					apiKey: '4YSu9e0Iy.ef788595-3e9f-49e3-ab2a-61ab10638511',
 					strictMode: false,
 					debug: true
 				};
@@ -96,12 +105,12 @@ window.addEventListener('load', async () => {
 		}
 
 		biconomy.onEvent(biconomy.READY, async () => {
-			ethereum.enable();
+			await ethereum.enable();
 			await biconomyLogin();
 
 			web3.version.getNetwork((err, netId) => {
-				if(netId != 15001){
-					alert("Please switch to Matic Testnetv3");
+				if(netId != 16110){
+					alert("Please switch to https://betav2.matic.network");
 				}
 			});
 			CounterContract = web3.eth.contract(counterABI);
@@ -163,7 +172,6 @@ async function incrementCounter() {
 
     });
 	let result = await promise;
-    console.log(result);
     return result;
 }
 
@@ -181,6 +189,27 @@ async function getCount() {
 
     });
 	let result = await promise;
-    console.log(result);
+	document.getElementById('cnt').innerText = "Count is : "+parseInt(result);
+    return result;
+}
+
+async function loop() {
+
+    let promise = new Promise(async (res, rej) => {
+
+		const txParams = {
+            value: web3.toWei(0.01, 'ether'),
+            gas: 1000000
+        }
+		Counter.loop(txParams,function(error, result) {
+			if (!error)
+				res(result);
+			else{
+				rej(error);
+			}
+		});
+
+    });
+	let result = await promise;
     return result;
 }
